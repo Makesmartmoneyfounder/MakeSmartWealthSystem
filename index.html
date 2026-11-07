@@ -268,6 +268,8 @@ td { padding: 9px 8px; border-bottom: 1px solid var(--line); }
   .mobx { display: none; }
   .shell { grid-template-columns: 220px minmax(0, 1fr); }
   .side { display: grid; gap: 4px; align-content: start; position: sticky; top: 18px; height: fit-content; }
+  .nv-group { display: grid; gap: 4px; }
+  .nv-sub { margin-left: 24px; }
   .nv { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 12px; color: var(--slate-2); font-weight: 500; font-size: 14px; }
   .nv:hover { background: rgba(26,37,65,.6); } .nv.on { background: var(--blue-soft); color: var(--blue-2); }
   .tabs { display: none; } body { padding-bottom: 60px; } #toast { bottom: 28px; }
@@ -1412,8 +1414,12 @@ function vTools() {
 function ico(k) { return '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="' + NAVIC[k] + '"/></svg>'; }
 
 function renderNav() {
-  var main = ['home', 'more', 'goals', 'levels', 'checkin', 'balance', 'awards', 'settings'], LRN = ['method', 'plan', 'tools', 'sim', 'mindset', 'pac', 'crisis', 'tax'];
-  $('#nav').innerHTML = main.map(function (v) { var on = view === v || (v === 'more' && LRN.indexOf(view) >= 0); return '<a href="#/' + v + '" class="nv' + (on ? ' on' : '') + '"' + (view === v ? ' aria-current="page"' : '') + '>' + ico(v) + '<span>' + E(t(v === 'more' ? 'nav.learn' : 'nav.' + v)) + '</span></a>'; }).join('');
+  var main = ['home', 'more', 'goals', 'checkin', 'balance', 'awards', 'settings'], LRN = ['method', 'plan', 'tools', 'sim', 'mindset', 'pac', 'crisis', 'tax'];
+  function navLink(v) { var on = view === v || (v === 'more' && LRN.indexOf(view) >= 0); return '<a href="#/' + v + '" class="nv' + (on ? ' on' : '') + '"' + (view === v ? ' aria-current="page"' : '') + '>' + ico(v) + '<span>' + E(t(v === 'more' ? 'nav.learn' : 'nav.' + v)) + '</span></a>'; }
+  $('#nav').innerHTML = main.map(function (v) {
+    if (v === 'goals') return '<div class="nv-group" role="group" aria-label="' + E(t('nav.goals')) + '">' + navLink(v) + '<div class="nv-sub">' + navLink('levels') + '</div></div>';
+    return navLink(v);
+  }).join('');
   $('#tabs').innerHTML = ['home', 'goals', 'levels', 'checkin', 'balance', 'more'].map(function (v) { var on = view === v || (v === 'more' && ['method', 'plan', 'sim', 'mindset', 'pac', 'crisis', 'tax', 'awards', 'settings'].indexOf(view) >= 0); return '<a href="#/' + (v === 'more' ? 'more' : v) + '" class="tb' + (on ? ' on' : '') + '">' + (v === 'more' ? '<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>' : ico(v)) + '<span>' + E(t('tab.' + v)) + '</span></a>'; }).join('');
   $$('.lang button').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.l === lang)); });
 }
